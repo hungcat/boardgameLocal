@@ -4,11 +4,15 @@ import * as logger from "morgan";
 import * as compression from "compression";
 import * as cookieParser from "cookie-parser";
 import { json, urlencoded } from "body-parser";
+import * as expressWs from "express-ws";
 
 import * as apis from "./routes/apis";
+import * as ws from "./routes/ws";
 
 const app: express.Application = express();
 const baseHref: string = '/';
+
+expressWs(app);
 
 app.disable("x-powered-by");
 
@@ -19,9 +23,15 @@ app.use(cookieParser());
 app.use(compression());
 
 app.use(baseHref, express.static(path.resolve(__dirname, '../client')));
-app.use(baseHref, express.static(path.resolve(__dirname, '../../node_modules')));
+app.use(baseHref + 'node_modules', express.static(path.resolve(__dirname, '../../src/client/node_modules/')));
 app.use('/apis', apis);
+app.use('/ws', ws);
 
+app.get('*', function(req: express.Request, res: express.Response) {
+    res.sendFile(path.resolve(__dirname, '../client/index.html'));
+});
+
+/*
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   let err: any = new Error('Not Found');
@@ -39,5 +49,6 @@ app.use(function(err: any, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+*/
 
 export { app };

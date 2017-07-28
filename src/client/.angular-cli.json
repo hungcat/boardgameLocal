@@ -7,7 +7,6 @@
     {
       "root": "src",
       "outDir": "../../dist/client",
-      "baseHref": "/",
       "assets": [
         "assets",
         "favicon.ico"

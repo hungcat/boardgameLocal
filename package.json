@@ -1,25 +1,28 @@
 {
-  "name": "express-angular2-project",
+  "name": "express-angular2-websocket",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "init": "npm i && cd ./src/client && npm i",
+    "clean": "npm cache clean && cd ./src/client && npm cache clean",
     "build": "npm run server:build && npm run client:build",
     "start": "npm run server:build && npm run _start",
     "_start": "concurrently --kill-others \"npm run client:build:w\" \"npm run server:build:w \" \"npm run server:start\"",
     "_ng": "cd ./src/client && ng",
-    "client:build":   "npm run _ng build",
+    "client:build": "npm run _ng build",
     "client:build:w": "npm run _ng build -- -w",
-    "server:build":   "tsc -p ./src/server",
+    "server:build": "tsc -p ./src/server",
     "server:build:w": "tsc -p ./src/server -w",
-    "server:start":   "nodemon ./dist/server/bin/www.js"
+    "server:start": "nodemon ./dist/server/bin/www.js"
   },
   "dependencies": {
     "@types/express": "^4.0.36",
+    "@types/ws": "^3.0.2",
     "body-parser": "~1.17.1",
     "compression": "^1.7.0",
     "cookie-parser": "~1.4.3",
-    "express": "~4.15.2",
+    "express": "^4.15.3",
+    "express-ws": "^3.0.0",
     "morgan": "~1.8.1"
   },
   "devDependencies": {
