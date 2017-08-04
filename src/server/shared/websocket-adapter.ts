@@ -1,106 +1,118 @@
 
 import * as http from "http";
 import * as WebSocket from "ws";
+import * as getUUID from "uuid/v4";
+import { WSApp } from './websocket-app'
 
-class ConnData {
-    id: number;
-    userName: string;
-    ip: string;
-    agent: string;
-
-    constructor(args: any = {}) {
-        this.id = getNextID();
-        this.userName = args.userName;
-        this.ip = args.ip;
-        this.agent = args.agent;
-    }
-
-    getName() { return this.userName || (this.id + 'th user'); }
+function WrapWebSocketAdapter(apps: Array<WSApp>) {
+    return new WebSocketAdapter(apps).exportOnConnection();
 }
 
-var getNextID = (function() {
-    let counter = 0;
-    return () => { return counter++; }
-})();
+interface WSAOptions {
+    checkBeforeBroadcast?: boolean;
+    brokenConnectionDetection?: WatchingOption;
+}
+interface WatchingOption {
+    enabled: true;
+    intervalSeconds?: number;
+}
 
-export class WebSocketAdapter {
-    conns: Map<WebSocket, ConnData>;
 
-    constructor(msgHandler?: (ws: WebSocket, type: string, data: any) => void) {
-        this.conns = new Map();
-        if (msgHandler) this.messageHandler = msgHandler;
-    }
+class WebSocketAdapter implements WSAOptions {
+    conns: Map<WebSocket, { isAlive: boolean }>;
+    apps: Array<WSApp>;
+    checkBeforeBroadcast: boolean;
+    brokenConnectionDetection: WatchingOption;
+    
 
-    exportOnConnection() { return this.onConnection.bind(this); }
-
-    onConnection(ws: WebSocket, req: http.IncomingMessage) {
-        this.conns.set(ws, new ConnData({
-            ip: req.connection.remoteAddress,
-            agent: req.headers['user-agent']
-        }));
-        console.log('New one arrived!');
-        console.log('ip: ' + this.conns.get(ws).ip);
-        console.log('agent: ' + this.conns.get(ws).agent);
-        console.log('There are ' + this.conns.size + ' users');
-
-        ws.on('message', (msg: string) => {
-            this.onMessage.call(this, ws, msg)
-        });
-
-        ws.send(JSON.stringify({
-            type: 'handshake'
-        }));
-    }
-
-    onMessage(ws: WebSocket, msg: string) {
-        console.log('There are ' + this.conns.size + ' users');
-        console.log(msg);
-        const obj = JSON.parse(msg);
-        this.messageHandler(ws, obj.type, obj.data);
-    }
-
-    messageHandler(ws: WebSocket, type: string, data: any) {
-        switch (type) {
-            case 'newMessage':
-                console.log(data);
-                this.broadcast(JSON.stringify({
-                    type: 'chatMessage',
-                    data: data
-                }));
-
-                break;
-            case 'newUser':
-                break;
-            case 'handshake':
-                this.conns.get(ws).userName = data.userName;
-                this.broadcast(JSON.stringify({
-                    type: 'chatMessage',
-                    data: {
-                        userName: '#system',
-                        text: data.userName + ' has entered the room'
-                    }
-                }));
-                break;
-            default:
-                break;
+    constructor(apps: Array<WSApp>, options: WSAOptions = {
+        checkBeforeBroadcast: true,
+        brokenConnectionDetection: {
+            enabled: true,
+            intervalSeconds: 10 * 60
         }
+    }) {
+        this.conns = new Map();
+        this.apps = apps;
+
+        this.checkBeforeBroadcast = options.checkBeforeBroadcast;
+        this.brokenConnectionDetection = options.brokenConnectionDetection;
+
+        if (this.brokenConnectionDetection.enabled) {
+            this.startBrokenConnectionDetection();
+        }
+
+
+    }
+
+    exportOnConnection() { return this.onconnection.bind(this); }
+
+    onconnection(ws: WebSocket, req: http.IncomingMessage) {
+        this.conns.set(ws, { isAlive: true });
+        ws.on('pong', () => { this.conns.get(ws).isAlive = true; });
+        ws.on('message', (msg: string) => {
+            this.onmessage(ws, msg)
+        });
+        this.apps.forEach((app) => { app.onconnection(this, ws, req); });
+    }
+
+    onmessage(ws: WebSocket, msg: string) {
+        //console.log(msg);
+        const obj = JSON.parse(msg);
+        this.apps.forEach((app) => { app.onmessage(this, ws, obj.type, obj.data); });
+        this.checkConnections();
+    }
+
+    terminateConn(ws: WebSocket, e?: Error) {
+        this.conns.delete(ws);
+        this.apps.forEach((app) => { app.ondisconnection(this, ws, e); });
+        return ws.terminate();
     }
 
     send(ws: WebSocket, data: string, onerror?: (e: Error) => void) {
-        ws.send(data, onerror || ((e: Error) => {
-            if (e) {
-                console.log('Failed to send to ' + this.conns.get(ws).getName());
+        ws.send(data, (e: Error) => {
+            if (e) { 
+                console.log('Failed to send.');
+                if (onerror) onerror(e);
                 //console.log(e);
-                this.conns.delete(ws);
+                this.terminateConn(ws, e);
             }
-        }));
+        });
     }
  
     broadcast(data: string, excludes: Array<WebSocket> = []) {
-        this.conns.forEach((connData: ConnData, ws: WebSocket) => {
+        if (this.checkBeforeBroadcast) {
+            this.checkConnections();
+        }
+
+        this.conns.forEach((v: any, ws: WebSocket) => {
             if (!excludes.includes(ws)) {
                 this.send(ws, data);
             }
         });
     }
+
+    checkConnections() {
+        this.conns.forEach((v: any, ws: WebSocket) => {
+            if (ws.readyState !== WebSocket.OPEN) {
+                this.terminateConn(ws);
+            }
+        });
+    }
+
+    startBrokenConnectionDetection() {
+
+        const interval = setInterval(() => {
+            this.conns.forEach((v: any, ws: WebSocket) => {
+                if (v.isAlive === false) return this.terminateConn(ws);
+
+                v.isAlive = false;
+                ws.ping('', false, true);
+            });
+        }, this.brokenConnectionDetection.intervalSeconds);
+        
+
+    }
 }
+
+export { WebSocketAdapter, WrapWebSocketAdapter }

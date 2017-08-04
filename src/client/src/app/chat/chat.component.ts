@@ -2,6 +2,14 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { WebSocketWrapper, WebSocketEventListeners } from "../shared/websocket-wrapper";
 
+let storage = sessionStorage;
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+interface Message {
+    userName: string;
+    text: string;
+}
+
 @Component({
     selector: 'app-chat',
     templateUrl: './chat.component.html',
@@ -9,33 +17,29 @@ import { WebSocketWrapper, WebSocketEventListeners } from "../shared/websocket-w
 })
 export class ChatComponent implements OnInit, WebSocketEventListeners {
     @Input() message: string = '';
-    conversation = [];
+    conversation: Array<Message> = [];
     ws: WebSocketWrapper = null;
 
     constructor(private _router: Router){}
 
     ngOnInit() {
-        if (sessionStorage.getItem("userName") === null){
+        if (storage.getItem("userName") === null){
             this._router.navigate(['/login']);
+        } else {
+            this.ws = new WebSocketWrapper(null, this);
         }
-        //this.ws = new WebSocketWrapper(null, this);
-        //this.ws = new WebSocketWrapper().registerListeners(this);
-        this.ws = new WebSocketWrapper(null);
-        console.log(this.ws);
-        console.log(this.ws.registerListeners);
-        //this.ws.registerListeners(this);
-        WebSocketWrapper.prototype.registerListeners.call(this.ws, this);
-
     }
 
     send() {
         if (this.message) {
+            let msgData: Message = {
+                'userName': storage.getItem("userName"),
+                'text': this.message
+            };
+
             this.ws.send(JSON.stringify({
                 type: 'newMessage',
-                data: {
-                    'userName': sessionStorage.getItem("userName"),
-                    'text': this.message
-                }
+                data: msgData
             }));
             this.message = '';
         }
@@ -51,9 +55,9 @@ export class ChatComponent implements OnInit, WebSocketEventListeners {
         return data.userName === '';
     }
 
-    onOpen(e: Event) { console.log(e); }
+    onopen(e: Event) { console.log(e); }
 
-    onMessage(e: MessageEvent) {
+    onmessage(e: MessageEvent) {
         console.log(e);
         if (e) {
             const obj = JSON.parse(e.data);
@@ -67,16 +71,20 @@ export class ChatComponent implements OnInit, WebSocketEventListeners {
                 this.conversation.push(data);
                 break;
             case 'handshake':
+                let id = storage.getItem('id');
+                if (!uuidPattern.test(id)) id = null;
                 this.ws.send(JSON.stringify({
                     type: 'handshake',
                     data: {
-                        'userName': sessionStorage.getItem("userName")
+                        'id': id,
+                        'userName': storage.getItem("userName")
                     }
                 }));
+                if (!id) storage.setItem('id', data.id);
                 break;
         }
     }
 
-    onError(e: ErrorEvent) { console.log(e); }
-    onClose(e: CloseEvent) { console.log(e); }
+    onerror(e: ErrorEvent) { console.log(e); }
+    onclose(e: CloseEvent) { console.log(e); }
 }

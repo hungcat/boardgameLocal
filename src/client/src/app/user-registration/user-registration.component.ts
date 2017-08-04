@@ -15,28 +15,40 @@ export class UserRegistrationComponent implements OnInit {
         private _router: Router){}
  
     ngOnInit() {
-        this.ws = new WebSocketWrapper();
-        WebSocketWrapper.prototype.registerListeners.call(this.ws, 
-            { onMessage: (e: MessageEvent) => { console.log(e); }});
+        this.ws = new WebSocketWrapper(null, this);
+        this.userName = sessionStorage.getItem('userName');
+    }
+
+    onmessage(e: MessageEvent) {
+        console.log(e);
+        if (e) {
+            const obj = JSON.parse(e.data);
+            this.messageHandler(obj.type, obj.data);
+        }
+    }
+
+    messageHandler(type: string, data: any) {
+        switch(type) {
+            case 'registrationResponse':
+                if (data.isOK) {
+                    sessionStorage.setItem('id', data.id);
+                    sessionStorage.setItem('userName', data.userName);
+                    this.ws.disconnect();
+                    this._router.navigate(['/chat']);
+                }
+                break;
+        }
     }
 
     login() {
         if (this.userName !== null){
-            sessionStorage.setItem("userName", this.userName);
-            this._router.navigate(['/chat']);
-            try {
-                this.ws.send(JSON.stringify({
-                    type: 'newUser',
-                    data: {
-                        name: this.userName
-                    }
-                }));
-            } catch (e) {
-                console.log(e);
-                console.log(this.ws._ws.readyState);
-            } finally {
-                
-            }
+            this.ws.send(JSON.stringify({
+                type: 'registrationChallenge',
+                data: {
+                    id: sessionStorage.getItem('id'),
+                    userName: this.userName
+                }
+            }));
         }
     }
  
