@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as expressWs from "express-ws";
-import { WrapWebSocketAdapter } from "../shared/WebSocket-adapter";
+import { WrapWebSocketAdapter } from "../shared/websocket-adapter";
 import { ChatApp } from "../shared/chat";
 
 let router: any = Router();
