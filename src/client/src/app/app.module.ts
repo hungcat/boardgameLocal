@@ -8,6 +8,8 @@ import { UserRegistrationComponent } from './user-registration/user-registration
 import { ChatComponent } from './chat/chat.component';
 import { BoardComponent } from './board/board.component';
 import { DraggableItemComponent } from './board/items/draggable-item/draggable-item.component';
+import { CardComponent } from './board/items/card/card.component';
+import { DeckComponent } from './board/items/deck/deck.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { DraggableItemComponent } from './board/items/draggable-item/draggable-i
     UserRegistrationComponent,
     ChatComponent,
     BoardComponent,
-    DraggableItemComponent
+    DraggableItemComponent,
+    CardComponent,
+    DeckComponent
   ],
   imports: [
     AppRoutingModule,

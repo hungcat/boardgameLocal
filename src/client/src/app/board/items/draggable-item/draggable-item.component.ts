@@ -9,7 +9,7 @@ declare var $: any;
 })
 export class DraggableItemComponent implements OnInit {
 
-  constructor(private el: ElementRef) { }
+  constructor(protected el: ElementRef) { }
 
   ngOnInit() {
       $(this.el.nativeElement)
