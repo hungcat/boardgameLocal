@@ -34,7 +34,7 @@ export class UserRegistrationComponent implements OnInit {
                     sessionStorage.setItem('id', data.id);
                     sessionStorage.setItem('userName', data.userName);
                     this.ws.disconnect();
-                    this._router.navigate(['/chat']);
+                    this._router.navigate(['/board']);
                 }
                 break;
         }
