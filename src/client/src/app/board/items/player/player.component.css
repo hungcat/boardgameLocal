@@ -1,0 +1,29 @@
+:host {
+    display: block;
+    width: 200px;
+    height: 100px;
+    position: relative;
+    background: #0cc;
+    vertical-align: middle;
+}
+
+.player-image {
+    position: absolute;
+    width: auto;
+    height: auto;
+    max-width: 50%;
+    max-height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.player-info {
+    position: absolute;
+    width: auto;
+    height: auto;
+    max-width: 50%;
+    max-height: 100%;
+    top: 0;
+    right: 0;
+}
+

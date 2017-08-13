@@ -1,13 +1,13 @@
-import { Component, ElementRef, OnInit, Input } from '@angular/core';
-import { DraggableItemComponent } from "../draggable-item/draggable-item.component";
+import { Component, Input } from '@angular/core';
+import { DraggableItem } from "../shared/board-item.base";
 declare var $: any;
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.css']
+  styleUrls: ['./card.component.css'],
 })
-export class CardComponent extends DraggableItemComponent {
+export class CardComponent extends DraggableItem {
     face: string = 'c01';
     back: string = 'z01';
     @Input() imgPath: string = getImgPath(this.back);

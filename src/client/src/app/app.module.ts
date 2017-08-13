@@ -10,6 +10,9 @@ import { BoardComponent } from './board/board.component';
 import { DraggableItemComponent } from './board/items/draggable-item/draggable-item.component';
 import { CardComponent } from './board/items/card/card.component';
 import { DeckComponent } from './board/items/deck/deck.component';
+import { PlayerComponent } from './board/items/player/player.component';
+import { AreaComponent } from './board/items/area/area.component';
+import { DraggableOptionsProvider } from './board/items/shared/board-item.base';
 
 @NgModule({
   declarations: [
@@ -19,14 +22,17 @@ import { DeckComponent } from './board/items/deck/deck.component';
     BoardComponent,
     DraggableItemComponent,
     CardComponent,
-    DeckComponent
+    DeckComponent,
+    PlayerComponent,
+    AreaComponent
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
     FormsModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [ DraggableOptionsProvider ],
+  bootstrap: [AppComponent],
+  entryComponents: [ AreaComponent ]
 })
 export class AppModule { }

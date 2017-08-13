@@ -1,22 +1,10 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
-
-declare var $: any;
+import { Component } from '@angular/core';
+import { DraggableItem } from "../shared/board-item.base";
 
 @Component({
   selector: 'app-draggable-item',
   templateUrl: './draggable-item.component.html',
   styleUrls: ['./draggable-item.component.css']
 })
-export class DraggableItemComponent implements OnInit {
+export class DraggableItemComponent extends DraggableItem {}
 
-  constructor(protected el: ElementRef) { }
-
-  ngOnInit() {
-      $(this.el.nativeElement)
-            .draggable({
-                containment:'#baseBoard',
-                scroll: false,
-            });
-  }
-
-}

@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnInit, Input } from '@angular/core';
-import { DraggableItemComponent } from "../draggable-item/draggable-item.component";
+import { Component, Input } from '@angular/core';
+import { DraggableItem } from "../shared/board-item.base";
+
 declare var $: any;
 
 @Component({
@@ -7,7 +8,7 @@ declare var $: any;
   templateUrl: './deck.component.html',
   styleUrls: ['./deck.component.css']
 })
-export class DeckComponent extends DraggableItemComponent {
+export class DeckComponent extends DraggableItem {
     back: string = 'z01';
     @Input() imgPath: string = getImgPath(this.back);
 
@@ -18,11 +19,6 @@ export class DeckComponent extends DraggableItemComponent {
 
     ngOnInit() {
         super.ngOnInit();
-        $(this.el.nativeElement).dblclick(() => {
-            this.isFace = !this.isFace;
-            let side = this.isFace ? this.face : this.back;
-            this.imgPath = getImgPath(side);
-        });
     }
     */
 }
