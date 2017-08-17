@@ -1,4 +1,6 @@
-const defaultURL = 'wss://hungtmrn.net/hungcat/boardgame/ws';
+import { ClientConfig } from "../../config";
+
+const defaultURL = ClientConfig.wsDestination || 'ws://localhost:3000/ws';
 
 export class WebSocketWrapper implements WebSocketEventListeners {
     url: string;

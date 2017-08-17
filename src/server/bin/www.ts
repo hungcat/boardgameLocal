@@ -9,22 +9,22 @@ import * as expressWs from "express-ws";
 import * as http from "http";
 import * as https from "https";
 import { readFileSync } from "fs";
-import { serverPort, isHTTPS, httpsKey, httpsCert } from "../config";
+import { ServerConfig } from "../config";
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || serverPort);
+const port = normalizePort(process.env.PORT || ServerConfig.serverPort || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
-const server = isHTTPS
+const server = ServerConfig.isHTTPS
     ? https.createServer({
-        key: readFileSync(httpsKey),
-        cert: readFileSync(httpsCert)
+        key: readFileSync(ServerConfig.httpsKey),
+        cert: readFileSync(ServerConfig.httpsCert)
     }, app)
     : http.createServer(app);
 
