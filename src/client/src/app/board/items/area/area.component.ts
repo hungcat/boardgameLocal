@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ViewChildren, QueryList, NgZone } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utils";
 import { Card } from "../../../shared/models";
+import { CardComponent } from "../card/card.component";
 
 declare var $: any;
 
@@ -11,11 +12,14 @@ declare var $: any;
   styleUrls: ['./area.component.css']
 })
 export class AreaComponent extends DynamicComponentBase {
-  @Input() public title: string = '手札';
-  public cards = [];
+  @Input() title: string = '手札';
+  cards = [];
+  @ViewChildren('cards') cardsRef: QueryList<CardComponent>;
+
 
   constructor(
     _el: ElementRef,
+    private _zone: NgZone,
   ) { super(_el); }
 
   ngOnInit() {
@@ -32,22 +36,26 @@ export class AreaComponent extends DynamicComponentBase {
       drop: (e, ui) => {
         console.log('dropped to ' + this.title);
         //console.log('cards: ' + this.cards.length);
+        //console.log(e);
+        let droppedPos = this.cardsRef
+          .toArray()
+          .map(cc => cc.getFullOffset())
+          .map(o => (o.left + o.right) / 2)
+          .findIndex(x => e.pageX < x);
 
-        let cardAreaDOM = $(e.currentTarget)
-          .find('.card-area').get(0);
-          switch (ui.draggable.attr('data-item-type')) {
-            case 'card':
-              if (ui.draggable.parent().get(0) !== cardAreaDOM) {
-                this.addCard(ui.draggable.data('getCard')());
-                ui.draggable.data('removeCard')();
-              }
-              break;
-            case 'deck':
-              if (ui.draggable.hasClass('fixed')) {
-                this.addCard(ui.draggable.data('popCard')());
-              }
-              break;
-          }
+        switch (ui.draggable.attr('data-item-type')) {
+          case 'card':
+            let card = ui.draggable.data('getCard')();
+            ui.draggable.data('removeCard')();
+            this.insertCard(card, droppedPos);
+            break;
+          case 'deck':
+            if (ui.draggable.hasClass('fixed')) {
+              let card = ui.draggable.data('popCard')();
+              this.insertCard(card, droppedPos);
+            }
+            break;
+        }
       },
     });
   }
@@ -57,19 +65,37 @@ export class AreaComponent extends DynamicComponentBase {
   }
 
   addCard(card: Card) {
-    if (card) this.cards.push(card);
+    if (card) {
+      this._zone.run(() => {
+        this.cards.push(card);
+      });
+    }
+  }
+
+  insertCard(card: Card, pos: number) {
+    if (card && 0 <= pos && pos <= this.cards.length) {
+      this._zone.run(() => {
+        this.cards.splice(pos, 0, card);
+      });
+    }
   }
 
   onCardDestroy(card: Card) {
     if (card) {
       let pos = this.cards.findIndex(card.equals.bind(card));
       if (pos >= 0) {
-        this.cards.splice(pos, 1);
+        this._zone.run(() => {
+          this.cards.splice(pos, 1);
+        });
       }
     }
   }
 
   setCards(cards: Array<Card>) {
-    if (cards) this.cards = cards;
+    if (cards) {
+      this._zone.run(() => {
+        this.cards = cards;
+      });
+    }
   }
 }

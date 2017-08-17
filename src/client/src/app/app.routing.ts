@@ -5,7 +5,7 @@ import { BoardComponent } from './board/board.component';
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'board', pathMatch: 'full' },
+  { path: '**', redirectTo: 'board', pathMatch: 'full' },
   { path: 'board', component: BoardComponent },
   { path: 'login', component: UserRegistrationComponent }
 ];

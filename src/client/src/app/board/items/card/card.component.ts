@@ -23,8 +23,8 @@ export class CardComponent extends DynamicComponentBase {
   @Output() onleave = new EventEmitter();
 
   constructor(
+    _el: ElementRef,
     private _zone: NgZone,
-    _el: ElementRef
   ) { super(_el); }
 
   ngOnInit() {

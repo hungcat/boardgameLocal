@@ -1,9 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { APP_BASE_HREF } from "@angular/common";
 
 import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from './app.routing';
 import { UserRegistrationComponent } from './user-registration/user-registration.component';
 import { BoardComponent } from './board/board.component';
 import { CardComponent } from './board/items/card/card.component';
@@ -33,7 +34,7 @@ import { ClientConfig } from "../config";
   ],
   providers: [
     WebSocketService,
-    { provide: WSHOST, useValue: ClientConfig.wsHost }
+    { provide: WSHOST, useValue: ClientConfig.wsHost },
   ],
   bootstrap: [AppComponent],
   entryComponents: [

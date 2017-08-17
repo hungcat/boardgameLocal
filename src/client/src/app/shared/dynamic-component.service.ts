@@ -29,15 +29,15 @@ export class DynamicComponentBase implements OnInit, OnDestroy {
     this.ondestroy.emit(null);
   }
 
-  public setOnInit(next: any) {
+  setOnInit(next: any) {
     this.oninit.subscribe(next);
   }
 
-  public setOnDestroy(next: any) {
+  setOnDestroy(next: any) {
     this.ondestroy.subscribe(next);
   }
 
-  public setDoDestroy(next: any) {
+  setDoDestroy(next: any) {
     this.doDestroy.subscribe(next);
   }
 
@@ -52,6 +52,8 @@ export class DynamicComponentBase implements OnInit, OnDestroy {
     offset.right = offset.left + $this.outerWidth(true);
     return offset;
   }
+
+  getDOM() { return this._el.nativeElement; }
 }
 
 @Injectable()
