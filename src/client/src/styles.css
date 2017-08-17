@@ -4,3 +4,6 @@
   box-sizing: border-box;
 }
 */
+div#baseBoard > .ui-draggable {
+  position: absolute !important;
+}

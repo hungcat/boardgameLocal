@@ -1,16 +1,21 @@
 :host {
   display: block;
-  width: calc(100vw - 100px);
+  width: calc(100vw - 250px);
   height: 150px;
-  background: #fff;
-  border: solid 2px black;
-  vertical-align: middle;
-  color: black;
-  position: fixed;
+
+  position: fixed !important;
   bottom: 0;
   left: 0;
   right: 0;
-  margin: 30px auto;
+  margin: 25px auto 25px 225px;
+
+  color: black;
+  background: #fff;
+  border: solid 2px black;
+
+  vertical-align: middle;
+  user-select: none;
+  cursor: default;
 }
 
 p {
@@ -24,17 +29,30 @@ p {
   color: black;
 }
 .title {
-  width: 100px;
   left: -2px;
-  top: -30px;
+  top: -48px;
 }
 .exit {
   width: 18px;
   right: -2px;
-  top: -30px;
-  user-select: none;
+  top: -48px;
   cursor: pointer;
 }
 .exit:hover {
   background: #f00;
+}
+
+.card-area {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+.card-area > app-card {
+  display: inline-block;
+  height: calc(100% - 20px);
+  width: auto;
+  margin: 10px;
 }

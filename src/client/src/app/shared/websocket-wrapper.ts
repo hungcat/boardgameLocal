@@ -1,4 +1,4 @@
-const defaultURL = 'ws://localhost:3000/ws';
+const defaultURL = 'wss://hungtmrn.net/hungcat/boardgame/ws';
 
 export class WebSocketWrapper implements WebSocketEventListeners {
     url: string;
@@ -64,6 +64,33 @@ export interface WebSocketEventListeners {
     onmessage: (e: MessageEvent) => void;
     onerror?: (e: ErrorEvent) => void;
     onclose?: (e: CloseEvent) => void;
+}
+
+
+const listenersBase = {
+  onopen: (e: Event) => { console.log(e); },
+  onmessage: (e: MessageEvent) => { console.log(e); },
+  onerror: (e: ErrorEvent) => { console.log(e); },
+  onclose: (e: CloseEvent) => { console.log(e); },
+};
+
+export function generateWebSocketEventListeners(args: any = {}): WebSocketEventListeners {
+  if (!args.onmessage && args.messageHandler) {
+    args.onmessage = (e: MessageEvent) => {
+      console.log(e);
+      if (e) {
+        const obj = JSON.parse(e.data);
+        args.messageHandler(obj.type, obj.data);
+      }
+    }
+  }
+
+  return {
+    onopen: args.onopen || listenersBase.onopen,
+    onmessage: args.onmessage || listenersBase.onmessage,
+    onerror: args.onerror || listenersBase.onerror,
+    onclose: args.onclose || listenersBase.onclose,
+  };
 }
 
 function reconnectInterval(k: number) {

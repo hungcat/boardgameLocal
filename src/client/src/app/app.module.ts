@@ -12,7 +12,7 @@ import { CardComponent } from './board/items/card/card.component';
 import { DeckComponent } from './board/items/deck/deck.component';
 import { PlayerComponent } from './board/items/player/player.component';
 import { AreaComponent } from './board/items/area/area.component';
-import { DraggableOptionsProvider } from './board/items/shared/board-item.base';
+import { AreaGeneratorComponent } from './board/items/area-generator/area-generator.component';
 
 @NgModule({
   declarations: [
@@ -24,15 +24,22 @@ import { DraggableOptionsProvider } from './board/items/shared/board-item.base';
     CardComponent,
     DeckComponent,
     PlayerComponent,
-    AreaComponent
+    AreaComponent,
+    AreaGeneratorComponent
   ],
   imports: [
     AppRoutingModule,
     BrowserModule,
     FormsModule
   ],
-  providers: [ DraggableOptionsProvider ],
+  providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [ AreaComponent ]
+  entryComponents: [
+    CardComponent,
+    DeckComponent,
+    PlayerComponent,
+    AreaComponent,
+    AreaGeneratorComponent
+  ]
 })
 export class AppModule { }

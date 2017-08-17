@@ -1,9 +1,12 @@
-div.container {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    left: 0;
-    top: 0;
-    background: #040;
-    color: white;
+div#baseBoard {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  background: #040;
+  color: white;
+  z-index: 1;
+  user-select: none;
 }
+

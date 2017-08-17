@@ -1,29 +1,52 @@
 :host {
-    display: block;
-    width: 200px;
-    height: 100px;
-    position: relative;
-    background: #0cc;
-    vertical-align: middle;
+  display: block;
+  width: 200px;
+  height: 100px;
+
+  background: #0cc;
+  vertical-align: middle;
 }
 
 .player-image {
-    position: absolute;
-    width: auto;
-    height: auto;
-    max-width: 50%;
-    max-height: 100%;
-    top: 0;
-    left: 0;
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 .player-info {
-    position: absolute;
-    width: auto;
-    height: auto;
-    max-width: 50%;
-    max-height: 100%;
-    top: 0;
-    right: 0;
+  display: block;
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  right: 0;
 }
-
+.player-info > div {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  left: 0;
+  right: 0;
+}
+.player-info-upper {
+  top: 0;
+}
+.player-info-lower {
+  bottom: 0;
+  vertical-align: bottom;
+}
+.hand-image img {
+  height: 50px;
+  bottom: 0;
+}
+.hand-image span {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: black;
+  color: white;
+  padding: 0 5px;
+  cursor: default;
+}

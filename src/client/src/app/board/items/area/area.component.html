@@ -1,2 +1,5 @@
 <p class="title">{{title}}</p>
-<p class="exit" (click)="onExitClicked($event)" *ngIf="isExitable">×</p>
+<p class="exit" (click)="onExitClicked($event)" *ngIf="isDestroyable">×</p>
+<div class="card-area">
+  <app-card *ngFor="let card of cards" [card]="card" (onleave)="onCardDestroy(card)"></app-card>
+</div>

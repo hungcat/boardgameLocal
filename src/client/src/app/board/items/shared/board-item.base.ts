@@ -1,69 +1,40 @@
 import { Component, Injectable, EventEmitter, Output, ElementRef, OnInit, OnDestroy } from '@angular/core';
-
-declare var $: any;
+import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
+import { makeDraggable, makeDroppable } from "../../../shared/utilities";
 
 @Component({})
-export class BoardItemBase implements OnInit, OnDestroy {
-  @Output() oninit = new EventEmitter();
-  @Output() ondestroy = new EventEmitter();
-  closing = new EventEmitter();
+export class DraggableItem extends DynamicComponentBase {
+  exDraggableOptions = {};
+  constructor(_el: ElementRef) { super(_el); }
 
   ngOnInit() {
-
-    this.oninit.emit(null);
-  }
-  ngOnDestroy() {
-    this.ondestroy.emit(null);
-
-  }
-
-  public setOnInit(next: any) {
-    this.oninit.subscribe(next);
-  }
-
-  public setOnDestroy(next: any) {
-    this.ondestroy.subscribe(next);
-  }
-
-  public setClosing(next: any) {
-    this.closing.subscribe(next);
-  }
-}
-
-@Injectable()
-export class DraggableOptionsProvider {
-  options = {
-    containment:'#baseBoard',
-    scroll: false,
-    stack: '.ui-draggable'
-  };
-
-  public getOptions() { return this.options; }
-
-  public setOptions(options: any) {
-    Object.assign(this.options, options);
+    super.ngOnInit();
+    makeDraggable(this._el, this.exDraggableOptions);
   }
 }
 
 @Component({})
-export class DraggableItem extends BoardItemBase {
-  constructor(
-    protected el: ElementRef,
-    protected dop: DraggableOptionsProvider
-  ) {
-    super();
-  }
+export class DroppableItem extends DynamicComponentBase {
+  exDroppableOptions = {};
+  constructor(_el: ElementRef) { super(_el); }
 
   ngOnInit() {
-      super.ngOnInit();
-      $(this.el.nativeElement).draggable(this.dop.getOptions());
+    super.ngOnInit();
+    makeDroppable(this._el, this.exDroppableOptions);
   }
 }
 
 @Component({})
-export class VerticalDraggableItem extends DraggableItem {
-  constructor(el: ElementRef, dop: DraggableOptionsProvider) {
-    super(el, dop);
-    this.dop.setOptions({ axis: 'y' });
+export class DraggableDroppableItem extends DraggableItem {
+  exDroppableOptions = {};
+  constructor(_el: ElementRef) { super(_el); }
+
+  ngOnInit() {
+    super.ngOnInit();
+    makeDroppable(this._el, this.exDroppableOptions);
   }
 }
+
+
+
+

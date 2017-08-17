@@ -9,7 +9,7 @@
     "start": "npm run server:build && npm run _start",
     "_start": "concurrently --kill-others \"npm run client:build:w\" \"npm run server:build:w \" \"npm run server:start\"",
     "_ng": "cd ./src/client && ng",
-    "client:build": "npm run _ng build -- --bh=/",
+    "client:build": "npm run _ng build -- --bh=/hungcat/boardgame/",
     "client:build:w": "npm run client:build -- -w",
     "server:build": "tsc -p ./src/server",
     "server:build:w": "npm run server:build -- -w",

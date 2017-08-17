@@ -1,4 +1,15 @@
-<img class="player-image" src="assets/figure_happy.png" />
+<img class="player-image" src="assets/images/figure_happy.png" />
 <div class="player-info">
-  <p>Here is an information area for this player</p>
+  <div class="player-info-upper">
+    <p>{{name}}</p>
+  </div>
+  <div class="player-info-lower">
+    <div class="hand-image" (dblclick)="showHand()">
+      <img src="assets/images/trump/z01.png" />
+      <span>{{hand.length}}</span>
+    </div>
+    <!--
+    <div class="hand-image"></div>
+    -->
+  </div>
 </div>
