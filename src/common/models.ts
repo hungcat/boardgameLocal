@@ -1,5 +1,7 @@
 import * as getUUID from "uuid/v4";
-import { getImgPath } from '../../../shared/utilities';
+
+const imgPrefix: string = 'assets/images/';
+const imgExt: string = '.png';
 
 export class Card {
   _id: string;
@@ -17,5 +19,13 @@ export class Card {
   equals(card: Card) { return this._id === card._id; }
   toggleFace() { this.isFace = !this.isFace; }
   getUpSide() { return this.isFace ? this.face : this.back; }
-  getImgPath() { return getImgPath(this.getUpSide()); }
+  getImgPath() { return imgPrefix + this.getUpSide() + imgExt; }
+
+  static readonly EMPTY = new Card({
+    face: 'trump/empty',
+    back: 'trump/empty',
+    isFace: true,
+  });
 };
+
+

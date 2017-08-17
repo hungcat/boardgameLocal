@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewContainerRef, HostBinding, NgZone } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewContainerRef, HostBinding } from '@angular/core';
 import { DynamicComponentBase, DynamicComponentService } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utilities";
 import { AreaComponent } from "../area/area.component";
@@ -19,7 +19,6 @@ export class PlayerComponent extends DynamicComponentBase {
   constructor(
     private _vcr: ViewContainerRef,
     private _dcs: DynamicComponentService,
-    private _zone: NgZone,
     _el: ElementRef
   ) { super(_el); }
 
@@ -40,7 +39,6 @@ export class PlayerComponent extends DynamicComponentBase {
         console.log('dropped to ' + this.name);
         //console.log('cards: ' + this.cards.length);
 
-        this._zone.run(() => {
           switch (ui.draggable.attr('data-item-type')) {
             case 'card':
               this.hand.push(ui.draggable.data('getCard')());
@@ -52,7 +50,6 @@ export class PlayerComponent extends DynamicComponentBase {
               }
               break;
           }
-        });
       },
     });
   }

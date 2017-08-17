@@ -4,18 +4,19 @@ import {
   ComponentFactoryResolver,
   ViewChild,
   ViewContainerRef,
-  NgZone
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { WebSocketWrapper, generateWebSocketEventListeners } from "../shared/websocket-wrapper";
+
 import { DynamicComponentService } from "../shared/dynamic-component.service";
 import { makeDroppable } from "../shared/utilities";
+import { Card } from "../shared/models";
+
 import { AreaComponent } from "./items/area/area.component";
 import { CardComponent } from "./items/card/card.component";
 import { DeckComponent } from "./items/deck/deck.component";
 import { PlayerComponent } from "./items/player/player.component";
 import { AreaGeneratorComponent } from "./items/area-generator/area-generator.component";
-import { Card } from "./items/shared/models";
 
 /**
  *  赤ずきん
@@ -53,7 +54,6 @@ export class BoardComponent implements OnInit {
   constructor(
     private _router: Router,
     private _dcs: DynamicComponentService,
-    private _zone: NgZone,
   ){}
 
   ngOnInit() {
@@ -107,7 +107,6 @@ export class BoardComponent implements OnInit {
 
         let isSameArea = ui.draggable.parent().get(0) === $('#baseBoard').get(0);
 
-        this._zone.run(() => {
           switch (ui.draggable.attr('data-item-type')) {
             case 'card':
               if (!isSameArea) {
@@ -129,7 +128,6 @@ export class BoardComponent implements OnInit {
               }
               break;
           }
-        });
 
       },
     });

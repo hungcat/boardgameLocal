@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utilities";
-import { Card } from "../shared/models";
+import { Card } from "../../../shared/models";
 
 declare var $: any;
 
@@ -16,7 +16,6 @@ export class AreaComponent extends DynamicComponentBase {
 
   constructor(
     _el: ElementRef,
-    private _zone: NgZone,
   ) { super(_el); }
 
   ngOnInit() {
@@ -36,7 +35,6 @@ export class AreaComponent extends DynamicComponentBase {
 
         let cardAreaDOM = $(e.currentTarget)
           .find('.card-area').get(0);
-        this._zone.run(() => {
           switch (ui.draggable.attr('data-item-type')) {
             case 'card':
               if (ui.draggable.parent().get(0) !== cardAreaDOM) {
@@ -50,7 +48,6 @@ export class AreaComponent extends DynamicComponentBase {
               }
               break;
           }
-        });
       },
     });
   }

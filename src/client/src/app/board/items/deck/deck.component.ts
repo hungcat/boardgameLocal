@@ -2,7 +2,7 @@ import { Component, Input, ElementRef, HostBinding, HostListener, NgZone } from 
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utilities";
 import { getImgPath } from '../../../shared/utilities';
-import { Card } from "../shared/models";
+import { Card } from "../../../shared/models";
 
 declare var $: any;
 
@@ -22,14 +22,12 @@ export class DeckComponent extends DynamicComponentBase {
   @HostBinding('class.fixed') 
   fixed: boolean = false;
 
-  isFixedDragging = false;
+  pickingNum = 0;
 
   constructor(
     _el: ElementRef,
     private _zone: NgZone,
-  ) {
-    super(_el);
-  }
+  ) { super(_el); }
 
   ngOnInit() {
     super.ngOnInit();
@@ -38,7 +36,6 @@ export class DeckComponent extends DynamicComponentBase {
     this.setDroppable();
 
     $(this._el.nativeElement)
-      .data('isFixedDragging', this.isFixedDragging)
       .data('popCard', this.popCard.bind(this));
   }
 
@@ -56,12 +53,12 @@ export class DeckComponent extends DynamicComponentBase {
       },
       start: (e, ui) => {
         this._zone.run(() => {
-          this.isFixedDragging = this.fixed;
+          this.pickingNum = this.fixed ? 1 : 0;
         });
       },
       stop: (e, ui) => {
         this._zone.run(() => {
-          this.isFixedDragging = false;
+          this.pickingNum = 0;
         });
       },
     });
@@ -71,14 +68,12 @@ export class DeckComponent extends DynamicComponentBase {
     makeDroppable(this._el, {
       drop: (e, ui) => {
         console.log('dropped to ' + this.deckType + ' deck');
-        this._zone.run(() => {
-          switch (ui.draggable.attr('data-item-type')) {
-            case 'card':
-              this.addCard(ui.draggable.data('getCard')());
-              ui.draggable.data('removeCard')();
-              break;
-          }
-        });
+        switch (ui.draggable.attr('data-item-type')) {
+          case 'card':
+            this.addCard(ui.draggable.data('getCard')());
+            ui.draggable.data('removeCard')();
+            break;
+        }
       },
     });
   }
@@ -86,22 +81,19 @@ export class DeckComponent extends DynamicComponentBase {
 
   @HostListener('dblclick')
   toggleFixed() {
-    this.fixed = !this.fixed;
+    this._zone.run(() => {
+      this.fixed = !this.fixed;
+    });
   }
 
-  getLastCardUpSidePath() {
-    return this.getNthCardUpSidePath();
-  }
   getNthCardUpSidePath(pos: number = 0) {
-    let side = this.deckType + '/empty';
     let lastCard = this.cards[this.cards.length - 1 - pos];
-    if (lastCard) {
-      side = lastCard.getUpSide();
-    }
-    return getImgPath(side);
+    return (lastCard || Card.EMPTY).getImgPath();
   }
 
   addCard(card: Card, pos: string | number = 'top') {
+    if (!card) return;
+
     if (pos === 'top') {
       this.cards.push(card);
     } else if (pos === 'bottom') {
@@ -114,9 +106,7 @@ export class DeckComponent extends DynamicComponentBase {
   }
 
   setCards(cards: Array<Card>) {
-    if (cards) {
-      this.cards = cards;
-    }
+    if (cards) this.cards = cards;
   }
 
   popCard() { return this.cards.pop(); }

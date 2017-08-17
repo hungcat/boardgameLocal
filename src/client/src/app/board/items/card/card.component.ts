@@ -1,7 +1,7 @@
-import { Component, Input, Output, EventEmitter, HostBinding, HostListener, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostBinding, HostListener, ElementRef, NgZone } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, updateDraggableZIndex } from "../../../shared/utilities";
-import { Card } from "../shared/models";
+import { Card } from "../../../shared/models";
 
 declare var $: any;
 
@@ -22,7 +22,10 @@ export class CardComponent extends DynamicComponentBase {
 
   @Output() onleave = new EventEmitter();
 
-  constructor(_el: ElementRef) { super(_el); }
+  constructor(
+    private _zone: NgZone,
+    _el: ElementRef
+  ) { super(_el); }
 
   ngOnInit() {
     super.ngOnInit();
@@ -81,17 +84,23 @@ export class CardComponent extends DynamicComponentBase {
   }
 
   @HostListener('dblclick')
-  toggleFace() { this.card.toggleFace(); }
+  toggleFace() {
+    this._zone.run(() => {
+      this.card.toggleFace();
+    });
+  }
 
   getCard() { return this.card; }
   setCard(card: Card) { this.card = card; }
 
   remove() {
-    if (this.isDestroyable) {
-      this.doDestroy.emit(null);
-    } else {
-      this.onleave.emit(null);
-    }
+    this._zone.run(() => {
+      if (this.isDestroyable) {
+        this.doDestroy.emit(null);
+      } else {
+        this.onleave.emit(null);
+      }
+    });
   }
 }
 
