@@ -1,7 +1,8 @@
+export * from '../../../../common/utils'
+
+
 import { ElementRef } from '@angular/core';
 import { Card } from './models';
-
-export * from '../../../../common/utils'
 
 declare var $: any;
 declare type jQueryObj = any;

@@ -29,8 +29,6 @@ export class WebSocketService {
       return;
     }
 
-    console.log(this.url, defaultURL)
-
     this._ws = new WebSocket(this.url);
     this._ws.onopen = this.onOpen.bind(this);
     this._ws.onclose = this.onClose.bind(this);
@@ -48,14 +46,17 @@ export class WebSocketService {
   }
 
   close() {
-    if (this._ws) this._ws.close(1000);
+    if (this._ws) {
+      this._ws.close(1000);
+      this._ws = null;
+    }
   }
 
 
   /* inner listeners */
 
   private onOpen(e: Event) {
-    console.log(e);
+    //console.log(e);
 
     this.reconnectCount = 0;
     this.listeners.open.forEach(f => f(e));
@@ -63,7 +64,7 @@ export class WebSocketService {
   }
 
   private onClose(e: CloseEvent) {
-    console.log(e);
+    //console.log(e);
 
     this.listeners.close.forEach(f => f(e));
     if (this.autoReconnect && e.code !== 1000) {
