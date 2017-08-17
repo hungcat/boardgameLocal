@@ -3,4 +3,5 @@
 node_modules/
 package-lock.json
 src/common/config.ts
+src/client/.angular-cli.json
 
