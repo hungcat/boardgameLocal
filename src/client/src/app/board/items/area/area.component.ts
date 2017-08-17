@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ElementRef } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
-import { makeDraggable, makeDroppable } from "../../../shared/utilities";
+import { makeDraggable, makeDroppable } from "../../../shared/utils";
 import { Card } from "../../../shared/models";
 
 declare var $: any;

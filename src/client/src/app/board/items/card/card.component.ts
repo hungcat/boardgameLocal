@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, HostBinding, HostListener, ElementRef, NgZone } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
-import { makeDraggable, updateDraggableZIndex } from "../../../shared/utilities";
+import { makeDraggable, updateDraggableZIndex } from "../../../shared/utils";
 import { Card } from "../../../shared/models";
 
 declare var $: any;

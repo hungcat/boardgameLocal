@@ -12,6 +12,9 @@ import { PlayerComponent } from './board/items/player/player.component';
 import { AreaComponent } from './board/items/area/area.component';
 import { AreaGeneratorComponent } from './board/items/area-generator/area-generator.component';
 
+import { WebSocketService, WSHOST } from './shared/websocket.service';
+import { ClientConfig } from "../config";
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +31,10 @@ import { AreaGeneratorComponent } from './board/items/area-generator/area-genera
     BrowserModule,
     FormsModule
   ],
-  providers: [],
+  providers: [
+    WebSocketService,
+    { provide: WSHOST, useValue: ClientConfig.wsHost }
+  ],
   bootstrap: [AppComponent],
   entryComponents: [
     CardComponent,

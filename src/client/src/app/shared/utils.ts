@@ -1,10 +1,7 @@
 import { ElementRef } from '@angular/core';
+import { Card } from './models';
 
-const imgPrefix: string = 'assets/images/';
-const imgExt: string = '.png';
-export function getImgPath(imgCode: string) {
-  return imgPrefix + imgCode + imgExt;
-}
+export * from '../../../../common/utils'
 
 declare var $: any;
 declare type jQueryObj = any;
@@ -74,3 +71,22 @@ export function updateDraggableZIndex() {
   });
 }
 
+export function createTrumpCards(suits: Array<string> = [], option = {}) {
+  return ['c', 'd', 'h', 's']
+    .filter(function(n) {
+      return suits.indexOf(n) !== -1;
+    }).reduce((result, suit) => {
+      Array.prototype.push.apply(result,
+        Array
+          .from({ length: 13 }, (v, i) => i + 1)
+          .map((i) => {
+            return new Card(Object.assign({
+              face: 'trump/' + suit + ('00' + i).slice(-2),
+              back: 'trump/z01',
+              isFace: false,
+            }, option))
+          })
+      );
+      return result;
+    }, []);
+}

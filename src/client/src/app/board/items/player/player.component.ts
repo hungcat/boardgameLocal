@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewContainerRef, HostBinding } from '@angular/core';
 import { DynamicComponentBase, DynamicComponentService } from "../../../shared/dynamic-component.service";
-import { makeDraggable, makeDroppable } from "../../../shared/utilities";
+import { makeDraggable, makeDroppable } from "../../../shared/utils";
 import { AreaComponent } from "../area/area.component";
 
 @Component({
