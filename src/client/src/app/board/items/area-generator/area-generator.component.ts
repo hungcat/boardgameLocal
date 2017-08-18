@@ -26,7 +26,7 @@ export class AreaGeneratorComponent extends DynamicComponentBase {
 
   createArea() {
     this._dcs.createComponent(this._vcr, AreaComponent, (compRef) => {
-      let instance: AreaComponent = compRef.instance;
+      let instance = compRef.instance;
       instance.title = '消せる手札';
       instance.setCss({'top': '20vw'});
       instance.setOnDestroy(() => {

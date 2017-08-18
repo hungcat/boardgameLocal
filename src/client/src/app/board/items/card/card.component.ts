@@ -32,13 +32,13 @@ export class CardComponent extends DynamicComponentBase {
 
     this.setDraggable();
 
-    $(this._el.nativeElement)
+    $(this.getDOM())
       .data('getCard', this.getCard.bind(this))
       .data('removeCard', this.remove.bind(this));
   }
 
   setDraggable() {
-    let $this = $(this._el.nativeElement);
+    let $this = $(this.getDOM());
     let isInArea = $this.parent().hasClass('card-area');
 
     makeDraggable($this, {

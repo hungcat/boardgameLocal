@@ -56,7 +56,7 @@ export class PlayerComponent extends DynamicComponentBase {
 
   showHand() {
     this._dcs.createComponent(this._vcr, AreaComponent, (compRef) => {
-      let instance: AreaComponent = compRef.instance;
+      let instance = compRef.instance;
       instance.title = this.name + 'の手札';
       instance.setCss({'top': '20vw'});
       instance.setCards(this.hand);

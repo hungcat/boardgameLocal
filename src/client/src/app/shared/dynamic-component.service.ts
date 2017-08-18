@@ -42,11 +42,11 @@ export class DynamicComponentBase implements OnInit, OnDestroy {
   }
 
   setCss(css: any) {
-    $(this._el.nativeElement).css(css);
+    $(this.getDOM()).css(css);
   }
 
   getFullOffset() {
-    let $this = $(this._el.nativeElement);
+    let $this = $(this.getDOM());
     let offset = $this.offset();
     offset.bottom = offset.top + $this.outerHeight(true);
     offset.right = offset.left + $this.outerWidth(true);
@@ -61,11 +61,14 @@ export class DynamicComponentService {
   public components: Set<ComponentRef<Component>> = new Set(); 
   constructor(private _cfr: ComponentFactoryResolver){}
 
-  public createComponent(domRef: ViewContainerRef, comp: any, callback = (compRef: any) => {}) {
-    const factory  = this._cfr.resolveComponentFactory(comp); 
-    const compRef = domRef.createComponent(factory);
+  public createComponent(domRef: ViewContainerRef, comp: any, callback = (compRef: ComponentRef<any>) => {}) {
+    return this.createComponentG<typeof comp>(domRef, comp, callback);
+  }
+  public createComponentG<T extends DynamicComponentBase>(domRef: ViewContainerRef, comp: T, callback = (compRef: ComponentRef<T>) => {}): T {
+    const factory  = this._cfr.resolveComponentFactory(comp as any); 
+    const compRef = domRef.createComponent(factory) as ComponentRef<T>;
 
-    const dComp = compRef.instance as DynamicComponentBase;
+    const dComp = compRef.instance;
     if (dComp) {
       // set closing event
       dComp.setDoDestroy(() => {

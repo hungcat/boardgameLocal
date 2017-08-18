@@ -14,13 +14,12 @@ export class DeckComponent extends DynamicComponentBase {
   @HostBinding('attr.data-item-type')
   itemType: string = 'deck';
 
-  deckType: string = 'trump';
   cards: Array<Card> = [];
+
   @HostBinding('class.with-shadow') 
   get hasCard() { return this.cards.length > 0; }
   @HostBinding('class.fixed') 
   fixed: boolean = false;
-
   pickingNum = 0;
 
   constructor(
@@ -34,7 +33,7 @@ export class DeckComponent extends DynamicComponentBase {
     this.setDraggable();
     this.setDroppable();
 
-    $(this._el.nativeElement)
+    $(this.getDOM())
       .data('popCard', this.popCard.bind(this));
   }
 
@@ -66,7 +65,7 @@ export class DeckComponent extends DynamicComponentBase {
   setDroppable() {
     makeDroppable(this._el, {
       drop: (e, ui) => {
-        console.log('dropped to ' + this.deckType + ' deck');
+        console.log('dropped to deck');
         switch (ui.draggable.attr('data-item-type')) {
           case 'card':
             this.addCard(ui.draggable.data('getCard')());

@@ -23,9 +23,6 @@ import { AreaGeneratorComponent } from "./items/area-generator/area-generator.co
  *  おやすみカードトラップカード
  *  赤ずきんカードオオカミカード母豚カード子豚カード
  *  スコアリング
- *  プレイヤーターゲッティング
- *  プレイヤー意思決定済み
- *  公開
  */
 
 declare var $: any;
@@ -64,14 +61,14 @@ export class BoardComponent implements OnInit {
 
       this.makeBoardDroppable();
 
-      let plComp = this.createComponent(PlayerComponent) as PlayerComponent;
+      let plComp = this.createComponent(PlayerComponent);
       this.createComponent(DeckComponent, (compRef) => {
-        let ins = compRef.instance as DeckComponent;
+        let ins = compRef.instance;
         ins.setCards(createTrumpCards(['d', 'h', 's']));
         ins.setCss({ top: plComp.getFullOffset().bottom });
       });
       this.createComponent(AreaComponent, (compRef) => {
-        let ins = compRef.instance as AreaComponent;
+        let ins = compRef.instance;
         ins.setCards(createTrumpCards(['c'], { isFace: true }));
       });
     }
@@ -108,7 +105,7 @@ export class BoardComponent implements OnInit {
           case 'card':
             if (!isSameArea) {
               this.createComponent(CardComponent, (compRef) => {
-                let newCard = compRef.instance as CardComponent;
+                let newCard = compRef.instance;
                 newCard.setCard(ui.draggable.data('getCard')());
                 newCard.setCss(ui.offset);
               });
@@ -118,14 +115,13 @@ export class BoardComponent implements OnInit {
           case 'deck':
             if (ui.draggable.hasClass('fixed')) {
               this.createComponent(CardComponent, (compRef) => {
-                let newCard = compRef.instance as CardComponent;
+                let newCard = compRef.instance;
                 newCard.setCard(ui.draggable.data('popCard')());
                 newCard.setCss(ui.offset);
               });
             }
             break;
         }
-
       },
     });
   }

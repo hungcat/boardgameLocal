@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, ViewChildren, QueryList, NgZone } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChildren, QueryList, NgZone, HostBinding } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utils";
 import { Card } from "../../../shared/models";
@@ -12,9 +12,14 @@ declare var $: any;
   styleUrls: ['./area.component.css']
 })
 export class AreaComponent extends DynamicComponentBase {
-  @Input() title: string = '手札';
+  @HostBinding('attr.data-item-type')
+  itemType: string = 'area';
+
+  title: string = '手札';
   cards = [];
-  @ViewChildren('cards') cardsRef: QueryList<CardComponent>;
+
+  @ViewChildren('cards')
+  cardsRef: QueryList<CardComponent>;
 
 
   constructor(
