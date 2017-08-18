@@ -43,11 +43,14 @@ export class AreaComponent extends DynamicComponentBase {
           .map(o => (o.left + o.right) / 2)
           .findIndex(x => e.pageX < x);
 
+        //console.log(this.cardsRef.toArray())
+        //console.log(droppedPos)
+
         switch (ui.draggable.attr('data-item-type')) {
           case 'card':
-            let card = ui.draggable.data('getCard')();
-            ui.draggable.data('removeCard')();
-            this.insertCard(card, droppedPos);
+              let card = ui.draggable.data('getCard')();
+              ui.draggable.data('removeCard')();
+              this.insertCard(card, droppedPos);
             break;
           case 'deck':
             if (ui.draggable.hasClass('fixed')) {
@@ -73,7 +76,8 @@ export class AreaComponent extends DynamicComponentBase {
   }
 
   insertCard(card: Card, pos: number) {
-    if (card && 0 <= pos && pos <= this.cards.length) {
+    if (card) {
+      if (pos < 0 || this.cards.length < pos) pos = this.cards.length;
       this._zone.run(() => {
         this.cards.splice(pos, 0, card);
       });
@@ -84,9 +88,9 @@ export class AreaComponent extends DynamicComponentBase {
     if (card) {
       let pos = this.cards.findIndex(card.equals.bind(card));
       if (pos >= 0) {
-        this._zone.run(() => {
-          this.cards.splice(pos, 1);
-        });
+      this._zone.run(() => {
+        this.cards.splice(pos, 1);
+      });
       }
     }
   }
@@ -94,7 +98,7 @@ export class AreaComponent extends DynamicComponentBase {
   setCards(cards: Array<Card>) {
     if (cards) {
       this._zone.run(() => {
-        this.cards = cards;
+this.cards = cards;
       });
     }
   }
