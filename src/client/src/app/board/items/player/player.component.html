@@ -1,12 +1,12 @@
 <img class="player-image" src="assets/images/figure_happy.png" />
 <div class="player-info">
   <div class="player-info-upper">
-    <p>{{name}}</p>
+    <p>{{player.name}}</p>
   </div>
   <div class="player-info-lower">
     <div class="hand-image" (dblclick)="showHand()">
-      <img src="assets/images/trump/z01.png" />
-      <span>{{hand.length}}</span>
+      <img [src]="player.hand.getNthCardUpSidePath(0, false)" />
+      <span>{{player.hand.cards.length}}</span>
     </div>
     <!--
     <div class="hand-image"></div>

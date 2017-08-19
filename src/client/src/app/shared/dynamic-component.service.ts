@@ -61,25 +61,26 @@ export class DynamicComponentService {
   public components: Set<ComponentRef<Component>> = new Set(); 
   constructor(private _cfr: ComponentFactoryResolver){}
 
-  public createComponent(domRef: ViewContainerRef, comp: any, callback = (compRef: ComponentRef<any>) => {}) {
+  public createComponent(domRef: ViewContainerRef, comp: any, callback = (comp: any, compRef: ComponentRef<any>) => {}) {
     return this.createComponentG<typeof comp>(domRef, comp, callback);
   }
-  public createComponentG<T extends DynamicComponentBase>(domRef: ViewContainerRef, comp: T, callback = (compRef: ComponentRef<T>) => {}): T {
+
+  public createComponentG<T extends DynamicComponentBase>(domRef: ViewContainerRef, comp: T, callback = (comp: T, compRef: ComponentRef<T>) => {}): T {
     const factory  = this._cfr.resolveComponentFactory(comp as any); 
     const compRef = domRef.createComponent(factory) as ComponentRef<T>;
-
-    const dComp = compRef.instance;
-    if (dComp) {
+    const ins = compRef.instance;
+    if (ins) {
       // set closing event
-      dComp.setDoDestroy(() => {
+      ins.setDoDestroy(() => {
         this.components.delete(compRef);
         compRef.destroy();
       });
-      dComp.isDestroyable = true;
+      ins.isDestroyable = true;
     }
-    callback(compRef);
+    callback(ins, compRef);
     this.components.add(compRef);
+    compRef.changeDetectorRef.detectChanges();
 
-    return compRef.instance;
+    return ins;
   }
 }

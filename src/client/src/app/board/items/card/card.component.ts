@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostBinding, HostListener, ElementRef, NgZone } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostBinding, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, updateDraggableZIndex } from "../../../shared/utils";
 import { Card } from "../../../shared/models";
@@ -11,20 +11,16 @@ declare var $: any;
   styleUrls: ['./card.component.css'],
 })
 export class CardComponent extends DynamicComponentBase {
+  @Input() card: Card = new Card(); 
+
   @HostBinding('attr.data-item-type')
-  itemType: string = 'card';
-
-  @Input() card: Card = new Card({
-    face:'trump/c01',
-    back: 'trump/z01',
-    isFace: false,
-  }); 
-
-  @Output() onleave = new EventEmitter();
+  itemType: string = this.card.itemType;
+  @Output()
+  onleave = new EventEmitter();
 
   constructor(
     _el: ElementRef,
-    private _zone: NgZone,
+    private _cdr: ChangeDetectorRef,
   ) { super(_el); }
 
   ngOnInit() {
@@ -45,15 +41,15 @@ export class CardComponent extends DynamicComponentBase {
       helper: isInArea ? 'clone' : 'original',
       appendTo: isInArea ? document.body : 'parent',
       start: function(e, ui) {
-        $(this)
-          .filter((i, v) => $(v).parent().hasClass('card-area'))
-          .addClass('invisible placeholder');
+        $(this).filter(
+          (i, v) => $(v).parent().hasClass('card-area')
+        ).addClass('invisible placeholder');
 
         let scrollAnimation = (e) => {
           let hoveredArea = $.getTopElementManager()
-                .list
-                .map(obj => obj.element)
-                .filter(el => el.tagName == 'APP-AREA');
+            .list
+            .map(obj => obj.element)
+            .filter(el => el.tagName == 'APP-AREA');
           let $target = $(hoveredArea).first().find('.card-area');
 
           if ($target.length == 0) return;
@@ -75,9 +71,10 @@ export class CardComponent extends DynamicComponentBase {
         $('html').on('mousemove', scrollAnimation);
       },
       stop: function(e, ui) {
-        $(this)
-          .filter((i, v) => $(v).parent().hasClass('card-area'))
-          .removeClass('invisible placeholder');
+        $(this).filter(
+          (i, v) => $(v).parent().hasClass('card-area')
+        ).removeClass('invisible placeholder');
+
         $('html').off('mousemove');
       },
     });
@@ -85,22 +82,24 @@ export class CardComponent extends DynamicComponentBase {
 
   @HostListener('dblclick')
   toggleFace() {
-    this._zone.run(() => {
-      this.card.toggleFace();
-    });
+    this.card.changeFace();
+    this._cdr.detectChanges();
   }
 
   getCard() { return this.card; }
-  setCard(card: Card) { this.card = card; }
+  setCard(card: Card) {
+    if (card) {
+      this.card = card;
+      this._cdr.detectChanges();
+    }
+  }
 
   remove() {
-    this._zone.run(() => {
-      if (this.isDestroyable) {
-        this.doDestroy.emit(null);
-      } else {
-        this.onleave.emit(null);
-      }
-    });
+    if (this.isDestroyable) {
+      this.doDestroy.emit(null);
+    } else {
+      this.onleave.emit(null);
+    }
   }
 }
 

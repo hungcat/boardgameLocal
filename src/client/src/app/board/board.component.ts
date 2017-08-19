@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { DynamicComponentService } from "../shared/dynamic-component.service";
 import { WebSocketService } from "../shared/websocket.service";
 import { makeDroppable, createTrumpCards, isUUID } from "../shared/utils";
+import { ItemBase, Deck, Player } from "../shared/models";
 
 import { AreaComponent } from "./items/area/area.component";
 import { CardComponent } from "./items/card/card.component";
@@ -64,7 +65,7 @@ export class BoardComponent implements OnInit {
       let plComp = this.createComponent(PlayerComponent);
       this.createComponent(DeckComponent, (compRef) => {
         let ins = compRef.instance;
-        ins.setCards(createTrumpCards(['d', 'h', 's']));
+        ins.setDeck(new Deck({ cards: createTrumpCards(['d', 'h', 's']) }));
         ins.setCss({ top: plComp.getFullOffset().bottom });
       });
       this.createComponent(AreaComponent, (compRef) => {
@@ -102,7 +103,7 @@ export class BoardComponent implements OnInit {
         let isSameArea = ui.draggable.parent().get(0) === $('#baseBoard').get(0);
 
         switch (ui.draggable.attr('data-item-type')) {
-          case 'card':
+          case 'Card':
             if (!isSameArea) {
               this.createComponent(CardComponent, (compRef) => {
                 let newCard = compRef.instance;
@@ -112,7 +113,7 @@ export class BoardComponent implements OnInit {
               ui.draggable.data('removeCard')();
             }
             break;
-          case 'deck':
+          case 'Deck':
             if (ui.draggable.hasClass('fixed')) {
               this.createComponent(CardComponent, (compRef) => {
                 let newCard = compRef.instance;
@@ -128,6 +129,34 @@ export class BoardComponent implements OnInit {
 
   createComponent(comp: any, callback?: (compRef: any) => void) {
     return this._dcs.createComponent(this._vcr, comp, callback);
+  }
+
+  loadComponents(items: Array<ItemBase>) {
+    items.forEach(item => {
+      switch (item.itemType) {
+        case 'Card':
+          this.createComponent(CardComponent, (comp) => {
+            comp.setCard(item);
+            comp.setCss(item.offset);
+          });   
+          break;
+        case 'Deck':
+          this.createComponent(DeckComponent, (comp) => {
+            comp.setDeck(item);
+            comp.setCss(item.offset);
+          });
+          break;
+        case 'Player':
+          this.createComponent(PlayerComponent, (comp) => {
+            comp.setPlayer(item);
+            comp.setCss(item.offset);
+          });
+          if (item._id === storage.getItem('playerID')) {
+
+          }
+          break;
+      }
+    });
   }
 }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChildren, QueryList, NgZone, HostBinding } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utils";
-import { Card } from "../../../shared/models";
+import { Card, Deck } from "../../../shared/models";
 import { CardComponent } from "../card/card.component";
 
 declare var $: any;
@@ -15,12 +15,13 @@ export class AreaComponent extends DynamicComponentBase {
   @HostBinding('attr.data-item-type')
   itemType: string = 'area';
 
-  title: string = '手札';
-  cards = [];
+  deck = new Deck({ name: '手札' });
+  get title() {
+    return this.deck.name;
+  };
 
   @ViewChildren('cards')
   cardsRef: QueryList<CardComponent>;
-
 
   constructor(
     _el: ElementRef,
@@ -52,14 +53,14 @@ export class AreaComponent extends DynamicComponentBase {
         //console.log(droppedPos)
 
         switch (ui.draggable.attr('data-item-type')) {
-          case 'card':
+          case 'Card':
             let card = ui.draggable.data('getCard')();
-            let idx = this.cards.findIndex(c => c.equals(card));
+            let idx = this.deck.findPos(card);
             if (idx > -1 && idx < droppedPos) droppedPos -= 1;
             ui.draggable.data('removeCard')();
             this.insertCard(card, droppedPos);
             break;
-          case 'deck':
+          case 'Deck':
             if (ui.draggable.hasClass('fixed')) {
               let card = ui.draggable.data('popCard')();
               this.insertCard(card, droppedPos);
@@ -77,35 +78,42 @@ export class AreaComponent extends DynamicComponentBase {
   addCard(card: Card) {
     if (card) {
       this._zone.run(() => {
-        this.cards.push(card);
+        this.deck.addCard(card);
       });
     }
   }
 
   insertCard(card: Card, pos: number) {
     if (card) {
-      if (pos < 0 || this.cards.length < pos) pos = this.cards.length;
       this._zone.run(() => {
-        this.cards.splice(pos, 0, card);
+        this.deck.insertCard(card, pos);
       });
     }
   }
 
   onCardDestroy(card: Card) {
     if (card) {
-      let pos = this.cards.findIndex(card.equals.bind(card));
+      let pos = this.deck.findPos(card);
       if (pos >= 0) {
         this._zone.run(() => {
-          this.cards.splice(pos, 1);
+          this.deck.popCard(pos);
         });
       }
+    }
+  }
+
+  setDeck(deck: Deck) {
+    if (deck) {
+      this._zone.run(() => {
+        this.deck = deck;
+      });
     }
   }
 
   setCards(cards: Array<Card>) {
     if (cards) {
       this._zone.run(() => {
-        this.cards = cards;
+        this.deck.setCards(cards);
       });
     }
   }

@@ -1,7 +1,7 @@
-import { Component, Input, ElementRef, HostBinding, HostListener, NgZone } from '@angular/core';
+import { Component, Input, ElementRef, HostBinding, HostListener, NgZone, ChangeDetectorRef } from '@angular/core';
 import { DynamicComponentBase } from "../../../shared/dynamic-component.service";
 import { makeDraggable, makeDroppable } from "../../../shared/utils";
-import { Card } from "../../../shared/models";
+import { Card, Deck } from "../../../shared/models";
 
 declare var $: any;
 
@@ -11,20 +11,19 @@ declare var $: any;
   styleUrls: ['./deck.component.css'],
 })
 export class DeckComponent extends DynamicComponentBase {
+  deck: Deck = new Deck();
+
   @HostBinding('attr.data-item-type')
-  itemType: string = 'deck';
-
-  cards: Array<Card> = [];
-
+  itemType: string = this.deck.itemType;
   @HostBinding('class.with-shadow') 
-  get hasCard() { return this.cards.length > 0; }
+  get hasCard() { return this.deck.cards.length > 0; }
   @HostBinding('class.fixed') 
   fixed: boolean = false;
   pickingNum = 0;
 
   constructor(
     _el: ElementRef,
-    private _zone: NgZone,
+    private _cdr: ChangeDetectorRef,
   ) { super(_el); }
 
   ngOnInit() {
@@ -50,14 +49,12 @@ export class DeckComponent extends DynamicComponentBase {
         }
       },
       start: (e, ui) => {
-        this._zone.run(() => {
-          this.pickingNum = this.fixed ? 1 : 0;
-        });
+        this.pickingNum = this.fixed ? 1 : 0;
+        this._cdr.detectChanges();
       },
       stop: (e, ui) => {
-        this._zone.run(() => {
-          this.pickingNum = 0;
-        });
+        this.pickingNum = 0;
+        this._cdr.detectChanges();
       },
     });
   }
@@ -67,8 +64,8 @@ export class DeckComponent extends DynamicComponentBase {
       drop: (e, ui) => {
         console.log('dropped to deck');
         switch (ui.draggable.attr('data-item-type')) {
-          case 'card':
-            this.addCard(ui.draggable.data('getCard')());
+          case 'Card':
+            this.deck.addCard(ui.draggable.data('getCard')());
             ui.draggable.data('removeCard')();
             break;
         }
@@ -79,35 +76,22 @@ export class DeckComponent extends DynamicComponentBase {
 
   @HostListener('dblclick')
   toggleFixed() {
-    this._zone.run(() => {
-      this.fixed = !this.fixed;
-    });
+    this.fixed = !this.fixed;
+    this._cdr.detectChanges();
   }
 
-  getNthCardUpSidePath(pos: number = 0) {
-    let lastCard = this.cards[this.cards.length - 1 - pos];
-    return (lastCard || Card.EMPTY).getImgPath();
-  }
-
-  addCard(card: Card, pos: string | number = 'top') {
-    if (!card) return;
-
-    if (pos === 'top') {
-      this.cards.push(card);
-    } else if (pos === 'bottom') {
-      this.cards.unshift(card);
-    } else if (isFinite(pos as number) && (0 <= pos || pos <= this.cards.length)) {
-      this.cards.splice(pos as number, 0, card);
-    } else {
-      this.cards.push(card);
+  setDeck(deck: Deck) {
+    if (deck) {
+      this.deck = deck;
+      this._cdr.detectChanges();
     }
   }
 
-  setCards(cards: Array<Card>) {
-    if (cards) this.cards = cards;
+  popCard() {
+    let card = this.deck.popCard();
+    this._cdr.detectChanges();
+    return card;
   }
-
-  popCard() { return this.cards.pop(); }
 }
 
 
